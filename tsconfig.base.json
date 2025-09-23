@@ -16,6 +16,9 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es2022",
-    "customConditions": ["@todo-app/source"]
+    "customConditions": ["@todo-app/source"],
+    "paths": {
+      "@todo-app/types": ["packages/types/src/index.ts"]
+    }
   }
 }
