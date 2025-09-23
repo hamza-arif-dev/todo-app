@@ -8,8 +8,8 @@ export default [
     ignores: [
       '**/dist',
       '**/vite.config.*.timestamp*',
-      '**/vitest.config.*.timestamp*',
-    ],
+      '**/vitest.config.*.timestamp*'
+    ]
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
@@ -22,12 +22,31 @@ export default [
           depConstraints: [
             {
               sourceTag: '*',
-              onlyDependOnLibsWithTags: ['*'],
-            },
-          ],
-        },
+              onlyDependOnLibsWithTags: ['*']
+            }
+          ]
+        }
       ],
-    },
+
+      '@typescript-eslint/no-non-null-assertion': 'off',
+
+      'import/order': [
+        'error',
+        {
+          groups: [
+            'builtin',
+            'external',
+            'internal',
+            'parent',
+            'sibling',
+            'index',
+            'object'
+          ],
+          'newlines-between': 'always',
+          alphabetize: { order: 'asc', caseInsensitive: true }
+        }
+      ]
+    }
   },
   {
     files: [
@@ -38,9 +57,9 @@ export default [
       '**/*.js',
       '**/*.jsx',
       '**/*.cjs',
-      '**/*.mjs',
+      '**/*.mjs'
     ],
     // Override or add rules here
-    rules: {},
-  },
+    rules: {}
+  }
 ];
