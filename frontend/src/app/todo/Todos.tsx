@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Todo } from '@todo-app/types';
 import { useNavigate } from 'react-router-dom';
 import { Spinner, TextWithLabel } from './components';
+import { useTodoProvider } from './context/TodoContext';
 
 export type Data = {
   state: 'initial' | 'loading' | 'success' | 'error'
@@ -9,6 +10,8 @@ export type Data = {
 }
 
 export const Todos = () => {
+  const { onSelectTodo } = useTodoProvider();
+
   const [data, setData] = useState<Data>({
     state: 'initial',
     todos: []
@@ -45,8 +48,24 @@ export const Todos = () => {
     navigate('/create');
   };
 
-  const onEdit = () => {
+  const onEdit = (todo: Todo) => {
+    onSelectTodo(todo);
+    navigate('/update');
+  };
 
+  const onArchive = async (id: string) => {
+    const response = await fetch(`http://localhost:3000/api/todos/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache'
+      },
+      body: JSON.stringify({ isArchived: true })
+    });
+    if (response.ok) {
+      await fetchTodos();
+    }
   };
 
   const onDone = async (id: string) => {
@@ -80,18 +99,20 @@ export const Todos = () => {
           border: '1px solid',
           borderColor: todo.isDone ? '#e8f5e9' : '#fff',
           borderRadius: '0.65rem',
-          padding: '1rem'
-
+          padding: '1rem',
+          textDecoration: todo.isArchived ? 'line-through' : 'none'
         }}
         key={todo.id}>
         <TextWithLabel label="Title" text={todo.title} />
         <TextWithLabel label="Description" text={todo.description ?? '-'} />
         <TextWithLabel label="Created At" text={new Date(todo.createdAt).toLocaleString()} />
         <TextWithLabel label="Updated At" text={new Date(todo.updatedAt).toLocaleString()} />
-        {!todo.isDone && <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-          <button>Edit</button>
-          <button onClick={() => onDone(todo.id)}>Done</button>
-        </div>}
+        {(todo.isDone || todo.isArchived) ? null :
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+            <button onClick={() => onEdit(todo)}>Edit</button>
+            <button onClick={() => onArchive(todo.id)}>Archive</button>
+            <button onClick={() => onDone(todo.id)}>Done</button>
+          </div>}
       </div>)}
     </div>}
     {data.state === 'loading' && <Spinner />}
