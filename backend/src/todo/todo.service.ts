@@ -11,8 +11,8 @@ export class TodoService {
       id: uuid(),
       title: todoCreate.title,
       description: todoCreate.description,
-      createAt: new Date().toISOString(),
-      updateAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       isDone: false,
       isArchived: false
     };
