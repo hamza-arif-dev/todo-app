@@ -83,6 +83,20 @@ export const Todos = () => {
     }
   };
 
+  const onDelete = async (id: string) => {
+    const response = await fetch(`http://localhost:3000/api/todos/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache'
+      }
+    });
+    if (response.ok) {
+      await fetchTodos();
+    }
+  };
+
   return <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
     <div style={{
       display: 'flex',
@@ -109,9 +123,15 @@ export const Todos = () => {
         <TextWithLabel label="Updated At" text={new Date(todo.updatedAt).toLocaleString()} />
         {(todo.isDone || todo.isArchived) ? null :
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-            <button onClick={() => onEdit(todo)}>Edit</button>
-            <button onClick={() => onArchive(todo.id)}>Archive</button>
-            <button onClick={() => onDone(todo.id)}>Done</button>
+            <div style={{ display: 'flex', flexDirection: 'row', gap: '0.65rem' }}>
+              <button style={{ width: '3.5rem' }} onClick={() => onEdit(todo)}>Edit</button>
+              <button style={{ width: '3.5rem' }} onClick={() => onDone(todo.id)}>Done</button>
+                </div>
+                <div style={{display: 'flex', flexDirection: 'row', gap: '0.65rem'}}>
+                <button style={{ width: '3.5rem' }} onClick={() => onArchive(todo.id)}>Archive</button>
+                  <button style={{width: '3.5rem'}} onClick={() => onDelete(todo.id)}>Delete
+                </button>
+            </div>
           </div>}
       </div>)}
     </div>}
