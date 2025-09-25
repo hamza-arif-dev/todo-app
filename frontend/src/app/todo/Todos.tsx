@@ -1,0 +1,101 @@
+import { useEffect, useState } from 'react';
+import { Todo } from '@todo-app/types';
+import { useNavigate } from 'react-router-dom';
+import { Spinner, TextWithLabel } from './components';
+
+export type Data = {
+  state: 'initial' | 'loading' | 'success' | 'error'
+  todos: Todo[]
+}
+
+export const Todos = () => {
+  const [data, setData] = useState<Data>({
+    state: 'initial',
+    todos: []
+  });
+
+  const fetchTodos = async () => {
+    try {
+      setData((prev) => ({ ...prev, state: 'loading' }));
+      const response = await fetch('http://localhost:3000/api/todos', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Cache-Control': 'no-cache'
+        }
+      });
+      const res = await response.json();
+      const todos = res.data as Todo[];
+      setData({ state: 'success', todos });
+    } catch (error) {
+      setData((prev) => ({ ...prev, state: 'error' }));
+    }
+  };
+
+
+  useEffect(() => {
+    (async () => {
+      await fetchTodos();
+    })();
+  }, []);
+
+  const navigate = useNavigate();
+
+  const navigateToCreate = () => {
+    navigate('/create');
+  };
+
+  const onEdit = () => {
+
+  };
+
+  const onDone = async (id: string) => {
+    const response = await fetch(`http://localhost:3000/api/todos/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache'
+      },
+      body: JSON.stringify({ isDone: true })
+    });
+    if (response.ok) {
+      await fetchTodos();
+    }
+  };
+
+  return <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+    <div style={{
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'flex-end'
+    }}>
+      <button type="button" onClick={navigateToCreate}>Create</button>
+    </div>
+    {data.state === 'success' && <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      {data.todos.map(todo => <div
+        style={{
+          display: 'flex', flexDirection: 'row', justifyContent: 'space-between',
+          background: todo.isDone ? '#e8f5e9' : '#fff',
+          border: '1px solid',
+          borderColor: todo.isDone ? '#e8f5e9' : '#fff',
+          borderRadius: '0.65rem',
+          padding: '1rem'
+
+        }}
+        key={todo.id}>
+        <TextWithLabel label="Title" text={todo.title} />
+        <TextWithLabel label="Description" text={todo.description ?? '-'} />
+        <TextWithLabel label="Created At" text={new Date(todo.createdAt).toLocaleString()} />
+        <TextWithLabel label="Updated At" text={new Date(todo.updatedAt).toLocaleString()} />
+        {!todo.isDone && <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+          <button>Edit</button>
+          <button onClick={() => onDone(todo.id)}>Done</button>
+        </div>}
+      </div>)}
+    </div>}
+    {data.state === 'loading' && <Spinner />}
+    {data.state === 'error' &&
+      <div style={{ border: '1px solid red', color: 'red' }}>Something went wrong. Try refreshing the page.</div>}
+  </div>;
+};
