@@ -1,5 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { CreateTodo, Todos } from './todo';
+import { TodoProvider } from './todo/context/TodoContext';
+import { UpdateTodo } from './todo/update';
 
 export function App() {
   return (
@@ -17,11 +19,14 @@ export function App() {
         padding: '2rem',
         borderRadius: '0.85rem'
       }}>
-        <Routes>
-          <Route path="create" element={<CreateTodo />} />
-          <Route path="" element={<Todos />} />
-          <Route path="*" element={<Navigate to="" replace />} />
-        </Routes>
+        <TodoProvider>
+          <Routes>
+            <Route path="create" element={<CreateTodo />} />
+            <Route path="update" element={<UpdateTodo />} />
+            <Route path="" element={<Todos />} />
+            <Route path="*" element={<Navigate to="" replace />} />
+          </Routes>
+        </TodoProvider>
       </div>
     </div>
   );

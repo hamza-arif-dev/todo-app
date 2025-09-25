@@ -26,10 +26,10 @@ export const TodoForm = <T = Record<string, unknown>>(props: TodoFormProps<T>) =
   return <form style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }} onSubmit={onFormSubmit}>
     <label htmlFor="title">Title*</label>
     <input style={{ height: '1.5rem' }} id="title" type="text"
-           onChange={(e) => onFormDataChange('title', e.target.value)} />
+           value={formData?.['title']} onChange={(e) => onFormDataChange('title', e.target.value)} />
     <label htmlFor="description">Description</label>
     <input style={{ height: '1.5rem' }} id="description" type="text"
-           onChange={(e) => onFormDataChange('description', e.target.value)} />
+           value={formData?.['description']} onChange={(e) => onFormDataChange('description', e.target.value)} />
     <button style={{ height: '1.8rem', marginTop: '0.85rem' }} type="submit">Submit</button>
   </form>;
 };
